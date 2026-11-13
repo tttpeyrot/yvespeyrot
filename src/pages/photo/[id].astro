@@ -1,0 +1,75 @@
+---
+// Une page par photo de la banque (photo/fra0001/) : bonne pour Google et
+// pour envoyer une photo précise (aperçu dans WhatsApp, Messages…).
+import Base from '../../layouts/Base.astro';
+import catalogue from '../../data/catalogue.json';
+import pays from '../../data/pays.json';
+import { lien, photoHd, pagePhoto } from '../../lien.js';
+
+export function getStaticPaths() {
+  return catalogue.map((c, i) => ({
+    params: { id: c.id.toLowerCase() },
+    props: { photo: c, prec: catalogue[i - 1] || null, suiv: catalogue[i + 1] || null },
+  }));
+}
+const { photo, prec, suiv } = Astro.props;
+const p = pays.find((x) => x.code === photo.pays);
+const titre = photo.alt || photo.description || photo.id;
+---
+<Base titre={`${photo.id} · ${titre}`} description={photo.description || photo.alt} image={photoHd(photo.id)} actif="galerie">
+  <article class="page fiche">
+    <div class="image">
+      <img src={photoHd(photo.id)} alt={photo.alt || photo.id} width={photo.l} height={photo.h} fetchpriority="high" />
+    </div>
+    <div class="infos">
+      <h1>{photo.id}</h1>
+      {photo.alt && <p class="alt">{photo.alt}</p>}
+      {photo.description && photo.description !== photo.alt && <p class="desc">{photo.description}</p>}
+      {p && <p class="lieu">Pays : <a href={lien(`galerie/?pays=${p.slug}`)}>{p.nom}</a></p>}
+      <button type="button" class="bouton plein sel" data-id={photo.id} hidden>+ Ajouter à ma sélection</button>
+      {photo.motsCles.length > 0 && (
+        <ul class="mots" aria-label="Mots-clés">
+          {photo.motsCles.map((m) => <li><a href={lien(`galerie/?q=${encodeURIComponent(m)}`)}>{m}</a></li>)}
+        </ul>
+      )}
+      <nav class="voisines" aria-label="Photos voisines">
+        {prec ? <a href={pagePhoto(prec.id)} rel="prev">‹ {prec.id}</a> : <span></span>}
+        <a href={lien(p ? `galerie/?pays=${p.slug}` : 'galerie/')}>Banque d'images</a>
+        {suiv ? <a href={pagePhoto(suiv.id)} rel="next">{suiv.id} ›</a> : <span></span>}
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .fiche { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 36px; align-items: start; padding-top: 34px; }
+  .image img { margin: 0 auto; max-height: 78vh; width: auto; object-fit: contain; }
+  h1 { font-size: 46px; font-weight: 500; color: #fff; letter-spacing: 0.03em; }
+  .alt { font-size: 19px; margin: 8px 0 0; color: var(--texte); }
+  .desc { color: var(--texte-doux); margin: 12px 0 0; }
+  .lieu { color: var(--gris); font-size: 14px; margin: 14px 0 18px; }
+  .mots { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .mots a { display: inline-block; font-size: 13px; color: var(--texte-doux); border: 1px solid var(--ligne); border-radius: 999px; padding: 3px 11px; }
+  .mots a:hover { color: var(--or); border-color: var(--or); }
+  .sel[aria-pressed='true'] { background: transparent; color: var(--or); }
+  .voisines { display: flex; justify-content: space-between; gap: 10px; margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--ligne); font-family: var(--titre); letter-spacing: 0.04em; }
+  @media (max-width: 800px) {
+    .fiche { grid-template-columns: 1fr; gap: 20px; padding-top: 20px; }
+    .image img { max-height: 70vh; }
+    h1 { font-size: 34px; }
+  }
+</style>
+
+<script>
+  import { basculer, suivre } from '../../scripts/selection.js';
+  const b = document.querySelector('.sel');
+  if (b) {
+    b.hidden = false;
+    b.addEventListener('click', () => basculer(b.dataset.id));
+    suivre((ids) => {
+      const oui = ids.includes(b.dataset.id);
+      b.setAttribute('aria-pressed', String(oui));
+      b.textContent = oui ? '✓ Dans ma sélection (retirer)' : '+ Ajouter à ma sélection';
+    });
+  }
+</script>

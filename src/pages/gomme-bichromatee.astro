@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Oeuvres from '../components/Oeuvres.astro';
+import Visionneuse from '../components/Visionneuse.astro';
+import oeuvres from '../data/oeuvres.json';
+import { Content } from '../textes/gomme.md';
+import { lien } from '../lien.js';
+---
+<Base titre="Atelier gomme bichromatée" description="Gommes bichromatées d'Yves Peyrot, en noir et blanc et en couleur, sur papiers Hahnemühle, Montval et artisanal, et explication du procédé." image={lien(`oeuvres/${oeuvres.gomme[0].image}.webp`)} actif="gomme">
+  <div class="page">
+    <h1 class="titre-page">Atelier Gomme Bichromatée</h1>
+    <nav class="onglets" aria-label="Rubriques">
+      <a href={lien('tirages-alternatifs/')}>Alternatif</a>
+      <a href={lien('gomme-bichromatee/')} aria-current="page">Gomme Bichromatée</a>
+      <a class="toutes" href={lien('galerie/')}>Toutes les images</a>
+    </nav>
+    <div class="deux">
+      <Oeuvres oeuvres={oeuvres.gomme} colonnes={2} />
+      <div class="texte"><Content /></div>
+    </div>
+  </div>
+  <Visionneuse />
+</Base>
+
+<style>
+  .deux { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .texte { font-size: 15px; line-height: 1.7; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; padding-right: 8px; }
+  .texte :global(h2) { font-size: 20px; color: var(--or); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .texte :global(ul) { padding-left: 1.1em; }
+  .texte :global(li) { margin-bottom: 8px; }
+  .texte :global(strong) { font-weight: 500; color: #fff; }
+  @media (max-width: 900px) {
+    .deux { grid-template-columns: 1fr; }
+    .texte { position: static; max-height: none; overflow: visible; }
+  }
+</style>

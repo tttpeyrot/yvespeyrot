@@ -1,0 +1,47 @@
+---
+// Grille d'œuvres (Gomme bichromatée, Tirages alternatifs) : un clic agrandit.
+import { lien } from '../lien.js';
+
+interface Oeuvre { image: string; titre: string; description: string; alt: string; l?: number; h?: number }
+interface Props { oeuvres: Oeuvre[]; colonnes?: number; descriptions?: boolean }
+const { oeuvres, colonnes = 4, descriptions = true } = Astro.props;
+---
+<ul class="oeuvres" style={`--colonnes:${colonnes}`} data-oeuvres={JSON.stringify(oeuvres.map((o) => ({ src: lien(`oeuvres/${o.image}.webp`), titre: o.titre, texte: o.description, alt: o.alt })))}>
+  {oeuvres.map((o, i) => (
+    <li>
+      <a href={lien(`oeuvres/${o.image}.webp`)} data-i={i} class="oeuvre">
+        <img src={lien(`oeuvres/mini/${o.image}.webp`)} alt={o.alt || o.titre} width={o.l} height={o.h} loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+      </a>
+      <p class="titre">{o.titre}</p>
+      {descriptions && o.description && <p class="desc">{o.description}</p>}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .oeuvres {
+    list-style: none; margin: 0; padding: 0; display: grid; gap: 34px 26px;
+    grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr)); align-items: start;
+  }
+  .oeuvre { position: relative; display: block; aspect-ratio: 4 / 5; }
+  .oeuvre img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: transform 0.25s; }
+  .oeuvre:hover img { transform: scale(1.03); }
+  .titre { margin: 10px 0 0; text-align: center; font-family: var(--titre); font-size: 15px; letter-spacing: 0.03em; color: var(--texte); }
+  .desc { margin: 2px 0 0; text-align: center; font-size: 12px; line-height: 1.45; color: var(--or); }
+  @media (max-width: 900px) { .oeuvres { grid-template-columns: repeat(min(var(--colonnes), 3), minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .oeuvres { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; } }
+</style>
+
+<script>
+  import { creerVisionneuse } from '../scripts/visionneuse.js';
+  const vis = creerVisionneuse();
+  for (const ul of document.querySelectorAll('.oeuvres')) {
+    const items = JSON.parse(ul.dataset.oeuvres);
+    ul.addEventListener('click', (e) => {
+      const a = e.target.closest('.oeuvre');
+      if (!a || e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      vis.ouvrir(items, Number(a.dataset.i));
+    });
+  }
+</script>

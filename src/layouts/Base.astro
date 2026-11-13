@@ -1,0 +1,131 @@
+---
+// Mise en page commune : en-tête (nom, e-mail, menu), pied de page.
+import '@fontsource/barlow/300.css';
+import '@fontsource/barlow/400.css';
+import '@fontsource/barlow/500.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '../styles/global.css';
+import { SITE } from '../site.js';
+import { lien } from '../lien.js';
+import oeuvres from '../data/oeuvres.json';
+
+interface Props {
+  titre?: string;
+  description?: string;
+  image?: string; // adresse relative au site, pour l'aperçu dans WhatsApp, Facebook…
+  actif?: 'accueil' | 'galerie' | 'alternatif' | 'gomme' | 'selection' | '';
+  index?: boolean;
+}
+const { titre, description = SITE.description, image, actif = '', index = true } = Astro.props;
+const titreComplet = titre ? `${titre} | ${SITE.nom} · ${SITE.sousTitre}` : `${SITE.nom} · ${SITE.sousTitre} · Banque d'images`;
+const absolu = (p: string) => new URL(p, Astro.site).href;
+const imageOg = absolu(image || lien(`accueil/${oeuvres.accueil[0].image}.webp`));
+const canonique = absolu(Astro.url.pathname);
+const menu = [
+  ['accueil', '', 'Accueil'],
+  ['galerie', 'galerie/', "Banque d'images"],
+  ['alternatif', 'tirages-alternatifs/', 'Tirages alternatifs'],
+  ['gomme', 'gomme-bichromatee/', 'Gomme bichromatée'],
+] as const;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    {!index && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonique} />
+    <link rel="icon" href={lien('favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#000000" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content={`${SITE.nom} · ${SITE.sousTitre}`} />
+    <meta property="og:title" content={titre || `${SITE.nom} · ${SITE.sousTitre}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={imageOg} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href={lien('sitemap-index.xml')} />
+  </head>
+  <body>
+    <header class="entete">
+      <a class="nom" href={lien('')}>{SITE.nom}</a>
+      <div class="sous-titre">{SITE.sousTitre}</div>
+      <a class="email" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <nav class="menu" aria-label="Menu">
+        {menu.map(([cle, chemin, texte]) => (
+          <a href={lien(chemin)} aria-current={actif === cle ? 'page' : undefined}>{texte}</a>
+        ))}
+        <a class="menu-sel" href={lien('selection/')} aria-current={actif === 'selection' ? 'page' : undefined}>
+          Ma sélection <span class="pastille" data-nb-selection>0</span>
+        </a>
+      </nav>
+    </header>
+    <main id="contenu">
+      <slot />
+    </main>
+    <footer class="pied">
+      <span>© {SITE.nom}, toutes les photographies sont protégées</span>
+      <a href={lien('mentions-legales/')}>Mentions légales</a>
+      <span class="webmaster">{SITE.webmaster}</span>
+    </footer>
+    <script>
+      import { suivre } from '../scripts/selection.js';
+      suivre((ids) => {
+        for (const el of document.querySelectorAll('[data-nb-selection]')) {
+          el.textContent = String(ids.length);
+          el.classList.toggle('vide', ids.length === 0);
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .entete { text-align: center; padding: 22px var(--bord) 8px; }
+  .nom {
+    font-family: var(--titre); font-weight: 400; color: var(--nom);
+    font-size: clamp(34px, 5vw, 44px); letter-spacing: 0.03em; line-height: 1.1;
+  }
+  .nom:hover { color: #fff; }
+  .sous-titre { font-family: var(--texte-police); font-style: italic; color: var(--gris); font-size: 15px; margin-top: 2px; }
+  .email { display: inline-block; font-size: 14px; color: var(--texte-doux); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #555; }
+  .email:hover { color: var(--or); text-decoration-color: var(--or); }
+  .menu {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 4px 22px; margin: 18px auto 0; padding: 10px 0;
+    border-top: 1px solid var(--ligne); border-bottom: 1px solid var(--ligne); max-width: 900px;
+  }
+  .menu a {
+    font-family: var(--titre); font-size: 15px; letter-spacing: 0.05em; color: var(--texte-doux);
+    padding: 6px 2px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .menu a:hover { color: var(--or); }
+  .menu a[aria-current='page'] { color: var(--or); }
+  .pastille {
+    display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 11px; background: var(--or); color: #000; font-size: 13px; font-weight: 500;
+  }
+  .pastille.vide { background: var(--fond-3); color: var(--gris); }
+  .pied {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px;
+    padding: 28px var(--bord) 34px; margin-top: 40px; border-top: 1px solid var(--ligne);
+    font-size: 12px; color: var(--gris); text-align: center;
+  }
+  .pied a { color: var(--texte-doux); }
+  .pied a:hover { color: var(--or); }
+  .webmaster { color: var(--or); font-family: var(--titre); letter-spacing: 0.04em; }
+  @media (max-width: 560px) {
+    .entete { padding-top: 14px; }
+    .nom { font-size: 32px; }
+    .sous-titre { font-size: 14px; }
+    .email { font-size: 13px; }
+    .menu { gap: 0 12px; margin-top: 10px; padding: 4px 0; }
+    .menu a { font-size: 13.5px; padding: 4px 0; letter-spacing: 0.03em; }
+    .pastille { min-width: 20px; height: 20px; font-size: 12px; }
+  }
+</style>

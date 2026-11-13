@@ -1,0 +1,66 @@
+name: Mise en ligne
+
+# À chaque envoi sur la branche main (et avec le bouton « Run workflow »),
+# le site est vérifié, construit puis publié sur GitHub Pages.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule mise en ligne à la fois ; la plus récente gagne.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Installer
+        run: npm ci
+
+      - name: Vérifier le catalogue et les images
+        run: npm run verifier
+
+      - name: Adresse du site
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Construire
+        run: npm run build
+        env:
+          SITE: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Poids du site
+        run: |
+          mo=$(( $(du -sb dist | cut -f1) / 1000000 ))
+          echo "Le site pèse $mo Mo (limite de GitHub Pages : 1 000 Mo)."
+          if [ "$mo" -gt 950 ]; then echo "::error::Site trop lourd ($mo Mo) : voir « Si le site devient trop lourd » dans CLAUDE.md"; exit 1; fi
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  publier:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Publier sur GitHub Pages
+        id: deploiement
+        uses: actions/deploy-pages@v5

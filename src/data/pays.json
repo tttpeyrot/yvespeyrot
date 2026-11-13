@@ -1,0 +1,9 @@
+[
+  { "code": "ISL", "nom": "Islande", "bouton": "Islande", "slug": "islande" },
+  { "code": "FRA", "nom": "France", "bouton": "France", "slug": "france" },
+  { "code": "CHI", "nom": "Chili", "bouton": "Chili", "slug": "chili" },
+  { "code": "GBR", "nom": "Royaume-Uni", "bouton": "UK", "slug": "uk" },
+  { "code": "ESP", "nom": "Espagne", "bouton": "Espagne", "slug": "espagne" },
+  { "code": "ITA", "nom": "Italie", "bouton": "Italie", "slug": "italie" },
+  { "code": "HAW", "nom": "Hawaï", "bouton": "Hawaï", "slug": "hawai" }
+]

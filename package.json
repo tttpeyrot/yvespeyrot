@@ -1,0 +1,23 @@
+{
+  "name": "yvespeyrot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "photos": "node outils/ajouter.mjs",
+    "verifier": "node outils/verifier.mjs",
+    "import-wix": "node outils/importer-wix.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.5",
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "astro": "^7.4.12"
+  },
+  "devDependencies": {
+    "playwright": "1.49",
+    "sharp": "^0.35.5"
+  }
+}

@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { lien } from '../lien.js';
+---
+<Base titre="Page introuvable" index={false}>
+  <div class="page perdu">
+    <h1 class="titre-page">Page introuvable</h1>
+    <p>Cette adresse ne mène à aucune page du site.</p>
+    <p><a class="bouton plein" href={lien('galerie/')}>Aller à la banque d'images</a></p>
+    <p><a href={lien('')}>Revenir à l'accueil</a></p>
+  </div>
+</Base>
+
+<style>
+  .perdu { text-align: center; }
+  .perdu p { margin: 18px 0 0; color: var(--texte-doux); }
+</style>

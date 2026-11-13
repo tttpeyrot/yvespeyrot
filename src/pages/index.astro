@@ -1,0 +1,113 @@
+---
+// Accueil : nombre de photos de la banque, accès à la banque, diaporama des
+// panoramas (liste dans src/data/oeuvres.json, rubrique « accueil »).
+import Base from '../layouts/Base.astro';
+import catalogue from '../data/catalogue.json';
+import oeuvres from '../data/oeuvres.json';
+import { lien } from '../lien.js';
+
+const total = catalogue.length.toLocaleString('fr-FR');
+const panoramas = oeuvres.accueil;
+---
+<Base actif="accueil">
+  <section class="compteur">
+    <h1 class="cache">Yves Peyrot, photographie : banque d'images</h1>
+    <p class="nombre">{total}</p>
+    <p>Images actuellement disponibles sur la banque d'images</p>
+    <p class="acces">Accédez à la banque d'images</p>
+    <a class="ici" href={lien('galerie/')}>ICI</a>
+  </section>
+
+  <section class="panoramas" aria-roledescription="carrousel" aria-label="Photographies à la une">
+    <div class="defile" id="defile">
+      {panoramas.map((p, i) => (
+        <figure class={i === 0 ? 'vue visible' : 'vue'} data-i={i} aria-hidden={i === 0 ? undefined : 'true'}>
+          <img src={lien(`accueil/${p.image}.webp`)} alt={p.alt} width={p.l} height={p.h} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption><strong>{p.titre}</strong>{p.description && <span> · {p.description}</span>}</figcaption>
+        </figure>
+      ))}
+    </div>
+    <button type="button" class="fleche prec" aria-label="Photo précédente">‹</button>
+    <button type="button" class="fleche suiv" aria-label="Photo suivante">›</button>
+    <div class="points" role="tablist" aria-label="Choisir une photo">
+      {panoramas.map((p, i) => <button type="button" role="tab" data-i={i} aria-label={p.titre} aria-selected={i === 0 ? 'true' : 'false'}></button>)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .compteur { text-align: center; padding: 48px var(--bord) 40px; font-family: var(--titre); font-size: 18px; letter-spacing: 0.03em; }
+  .compteur p { margin: 0; }
+  .nombre { color: var(--or); font-size: 22px; margin-bottom: 6px !important; }
+  .acces { margin-top: 22px !important; }
+  .ici {
+    display: inline-block; margin-top: 14px; font-size: 40px; font-weight: 500; color: var(--or);
+    text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; letter-spacing: 0.02em;
+  }
+  .ici:hover { color: var(--or-clair); }
+  .panoramas { position: relative; margin-top: 30px; }
+  .defile { position: relative; aspect-ratio: 2862 / 1000; overflow: hidden; background: #050505; }
+  .vue { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1.2s ease; }
+  .vue.visible { opacity: 1; }
+  .vue img { width: 100%; height: 100%; object-fit: cover; }
+  .vue figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 30px var(--bord) 12px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); font-size: 14px; color: #ddd; text-align: center;
+  }
+  .vue strong { font-family: var(--titre); font-weight: 500; letter-spacing: 0.04em; color: #fff; }
+  .fleche {
+    position: absolute; top: 50%; transform: translateY(-50%); border: 0; width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45); color: #eee; font-size: 28px; line-height: 1; display: grid; place-items: center;
+  }
+  .fleche:hover { background: var(--or); color: #000; }
+  .prec { left: 10px; }
+  .suiv { right: 10px; }
+  .points { display: flex; justify-content: center; gap: 4px; padding: 12px 0 0; }
+  .points button { width: 26px; height: 26px; border: 0; background: none; padding: 0; display: grid; place-items: center; }
+  .points button::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #444; }
+  .points button[aria-selected='true']::before { background: var(--or); }
+  @media (max-width: 640px) {
+    .compteur { padding: 26px var(--bord) 10px; font-size: 16px; }
+    .acces { margin-top: 14px !important; }
+    .ici { font-size: 34px; margin-top: 6px; }
+    .panoramas { margin-top: 18px; }
+    .defile { aspect-ratio: 16 / 9; }
+    .vue figcaption { font-size: 12px; }
+    .vue figcaption span { display: none; }
+    .fleche { width: 36px; height: 36px; font-size: 22px; }
+  }
+</style>
+
+<script>
+  const vues = [...document.querySelectorAll('.vue')];
+  const points = [...document.querySelectorAll('.points button')];
+  let i = 0;
+  let minuterie;
+  function montrer(n) {
+    i = (n + vues.length) % vues.length;
+    vues.forEach((v, k) => {
+      v.classList.toggle('visible', k === i);
+      if (k === i) v.removeAttribute('aria-hidden'); else v.setAttribute('aria-hidden', 'true');
+    });
+    points.forEach((p, k) => p.setAttribute('aria-selected', String(k === i)));
+    const suivante = vues[(i + 1) % vues.length]?.querySelector('img');
+    if (suivante) suivante.loading = 'eager';
+  }
+  const relancer = () => {
+    clearInterval(minuterie);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) minuterie = setInterval(() => montrer(i + 1), 5500);
+  };
+  document.querySelector('.prec').addEventListener('click', () => { montrer(i - 1); relancer(); });
+  document.querySelector('.suiv').addEventListener('click', () => { montrer(i + 1); relancer(); });
+  points.forEach((p, k) => p.addEventListener('click', () => { montrer(k); relancer(); }));
+  let x0 = null;
+  const defile = document.getElementById('defile');
+  defile.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
+  defile.addEventListener('pointerup', (e) => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) { montrer(i + (dx < 0 ? 1 : -1)); relancer(); }
+  });
+  montrer(0);
+  relancer();
+</script>

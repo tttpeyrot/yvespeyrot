@@ -1,0 +1,4 @@
+Déposez ici les photos à ajouter à la banque d'images (JPEG, TIFF, PNG, HEIC…),
+toutes du même pays, puis dites à Claude par exemple :
+  « ajoute les photos du dossier a-ajouter, ce sont des photos d'Islande »
+Les originaux sont ensuite rangés dans a-ajouter/deja-ajoutees/ (rien n'est effacé).

@@ -1,0 +1,149 @@
+---
+// « Ma sélection » : les photos choisies dans la banque d'images, à envoyer
+// par e-mail à Yves ou à partager par un lien (selection/?ids=FRA0001.ISL0042).
+import Base from '../layouts/Base.astro';
+import Visionneuse from '../components/Visionneuse.astro';
+import { SITE } from '../site.js';
+import { lien } from '../lien.js';
+---
+<Base titre="Ma sélection" actif="selection" index={false}>
+  <div class="page">
+    <h1 class="titre-page" id="titre">Ma sélection</h1>
+    <p class="intro" id="intro"></p>
+
+    <div class="recue" id="recue" hidden>
+      <p>Cette sélection vous a été envoyée.</p>
+      <div class="actions">
+        <button type="button" class="bouton plein" id="garder">+ Ajouter ces images à ma sélection</button>
+        <a class="bouton discret" href={lien('selection/')}>Voir ma sélection</a>
+      </div>
+    </div>
+
+    <div class="actions" id="actions" hidden>
+      <a class="bouton plein" id="email" href={`mailto:${SITE.email}`}>Envoyer ma sélection par e-mail</a>
+      <button type="button" class="bouton" id="partager">Partager ma sélection</button>
+      <button type="button" class="bouton discret" id="vider">Effacer ma sélection</button>
+    </div>
+    <div class="lien-partage" id="lien-partage" hidden>
+      <label for="lien">Lien à envoyer par message ou par e-mail :</label>
+      <input id="lien" type="text" readonly />
+      <span id="copie" aria-live="polite"></span>
+    </div>
+
+    <ul class="grille" id="grille"></ul>
+    <p class="vide" id="vide" hidden>
+      Votre sélection est vide. Dans la <a href={lien('galerie/')}>banque d'images</a>, touchez <strong>+</strong> sous une photo,
+      ou « Ajouter à ma sélection » dans la photo agrandie.
+    </p>
+  </div>
+  <Visionneuse />
+</Base>
+
+<style>
+  .intro { text-align: center; color: var(--texte-doux); margin: 8px 0 22px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 0 0 18px; }
+  .actions[hidden], .recue[hidden], .lien-partage[hidden], .vide[hidden] { display: none; }
+  .recue { text-align: center; border: 1px solid var(--brun-clair); background: #1a0d06; padding: 14px var(--bord) 4px; margin: 0 auto 22px; max-width: 640px; border-radius: 6px; }
+  .recue p { margin: 0 0 10px; }
+  .lien-partage { max-width: 640px; margin: 0 auto 26px; text-align: center; font-size: 14px; color: var(--texte-doux); }
+  .lien-partage input { width: 100%; margin-top: 6px; background: var(--fond-2); color: var(--texte); border: 1px solid #3a3a3a; border-radius: 6px; padding: 9px 12px; font: inherit; font-size: 14px; }
+  #copie { display: block; color: var(--or); min-height: 1.6em; }
+  .vide { text-align: center; color: var(--texte-doux); }
+  .grille { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 24px 18px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .grille :global(.vignette) { position: relative; display: block; aspect-ratio: 4 / 3; }
+  .grille :global(.vignette img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .grille :global(.legende) { text-align: center; margin-top: 6px; font-size: 13px; color: var(--texte-doux); }
+  .grille :global(.id) { display: block; font-family: var(--titre); font-size: 15px; letter-spacing: 0.05em; color: var(--texte); }
+  .grille :global(.retirer) { margin-top: 6px; background: none; border: 0; color: var(--gris); font-size: 13px; text-decoration: underline; padding: 4px; }
+  .grille :global(.retirer:hover) { color: var(--or); }
+  @media (max-width: 560px) { .grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; } }
+</style>
+
+<script>
+  import { chargerCatalogue } from '../scripts/catalogue.js';
+  import { lire, ajouter, retirer, vider, suivre, versLien, depuisLien } from '../scripts/selection.js';
+  import { creerVisionneuse } from '../scripts/visionneuse.js';
+  import { photoHd, photoMini, pagePhoto, lien } from '../lien.js';
+  import { SITE } from '../site.js';
+
+  const $ = (id) => document.getElementById(id);
+  const recue = depuisLien(new URLSearchParams(location.search).get('ids'));
+  const modeRecu = recue.length > 0;
+  const adressePage = new URL(lien('selection/'), location.origin).href;
+  const vis = creerVisionneuse({ selection: true });
+  let parId = new Map();
+
+  const ids = () => (modeRecu ? recue : lire()).filter((id) => parId.size === 0 || parId.has(id));
+  const pluriel = (n) => `${n} image${n > 1 ? 's' : ''}`;
+
+  function dessiner() {
+    const liste = ids();
+    $('titre').textContent = modeRecu ? 'Sélection reçue' : 'Ma sélection';
+    $('intro').textContent = liste.length ? pluriel(liste.length) : '';
+    $('recue').hidden = !modeRecu;
+    $('actions').hidden = modeRecu || liste.length === 0;
+    $('vide').hidden = liste.length > 0;
+    if (!liste.length) $('lien-partage').hidden = true;
+    const frag = document.createDocumentFragment();
+    liste.forEach((id, i) => {
+      const c = parId.get(id) || {};
+      const li = document.createElement('li');
+      li.innerHTML = `<a class="vignette" href="${pagePhoto(id)}" data-i="${i}"><img src="${photoMini(id)}" alt="" loading="lazy"></a>
+        <div class="legende"><span class="id">${id}</span><span class="alt"></span>${modeRecu ? '' : `<br><button type="button" class="retirer" data-id="${id}">Retirer</button>`}</div>`;
+      li.querySelector('img').alt = c.alt || id;
+      li.querySelector('.alt').textContent = c.alt || '';
+      frag.append(li);
+    });
+    $('grille').replaceChildren(frag);
+    majEmail(liste);
+    if (!$('lien-partage').hidden) $('lien').value = versLien(liste, adressePage);
+  }
+
+  function majEmail(liste) {
+    const lienSel = versLien(liste, adressePage);
+    let corps = `Bonjour,\n\nVoici ma sélection de ${pluriel(liste.length)} sur votre banque d'images :\n\n`;
+    const lignes = liste.map((id) => `${id}${parId.get(id)?.alt ? ' : ' + parId.get(id).alt : ''}`);
+    const complet = corps + lignes.join('\n') + `\n\nLa sélection en ligne : ${lienSel}\n`;
+    // Les longs e-mails sont coupés par certaines messageries : au-delà, on ne met que les identifiants.
+    corps = complet.length < 1600 ? complet : corps + liste.join(', ') + `\n\nLa sélection en ligne : ${lienSel}\n`;
+    $('email').href = `mailto:${SITE.email}?subject=${encodeURIComponent(`Ma sélection d'images (${liste.length})`)}&body=${encodeURIComponent(corps)}`;
+  }
+
+  $('grille').addEventListener('click', (e) => {
+    const r = e.target.closest('.retirer');
+    if (r) { retirer(r.dataset.id); return; }
+    const a = e.target.closest('.vignette');
+    if (a && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      const items = ids().map((id) => ({ id, src: photoHd(id), alt: parId.get(id)?.alt, titre: parId.get(id)?.alt, texte: parId.get(id)?.description, lien: pagePhoto(id) }));
+      vis.ouvrir(items, Number(a.dataset.i));
+    }
+  });
+
+  $('vider').addEventListener('click', () => {
+    if (confirm('Effacer toute votre sélection ?')) vider();
+  });
+
+  $('garder').addEventListener('click', () => {
+    ajouter(...recue);
+    $('garder').textContent = '✓ Ajoutées à ma sélection';
+    $('garder').disabled = true;
+  });
+
+  $('partager').addEventListener('click', async () => {
+    const url = versLien(ids(), adressePage);
+    $('lien-partage').hidden = false;
+    $('lien').value = url;
+    $('lien').select();
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+      try { await navigator.share({ title: `Ma sélection d'images : ${SITE.nom}`, url }); return; } catch { /* annulé */ }
+    }
+    try { await navigator.clipboard.writeText(url); $('copie').textContent = 'Lien copié : collez-le dans un message ou un e-mail.'; }
+    catch { $('copie').textContent = 'Copiez le lien ci-dessus.'; }
+  });
+
+  suivre(() => { if (!modeRecu) dessiner(); });
+  chargerCatalogue()
+    .then((c) => { parId = new Map(c.map((x) => [x.id, x])); dessiner(); })
+    .catch(() => dessiner());
+</script>

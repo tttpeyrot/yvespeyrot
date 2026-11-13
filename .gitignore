@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+# Captures et textes de l'ancien site Wix : pour mémoire, pas en ligne
+docs/
+# Photos à ajouter : déposées par Yves, traitées par « npm run photos »
+a-ajouter/*
+!a-ajouter/LISEZMOI.txt
+outils/.dimensions.json

@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Oeuvres from '../components/Oeuvres.astro';
+import Visionneuse from '../components/Visionneuse.astro';
+import oeuvres from '../data/oeuvres.json';
+import { Content } from '../textes/alternatif.md';
+import { lien } from '../lien.js';
+---
+<Base titre="Tirages alternatifs" description="Tirages alternatifs d'Yves Peyrot : émulsion photosensible au pinceau sur papier aquarelle, photomontages et traitements numériques." image={lien(`oeuvres/${oeuvres.alternatif[0].image}.webp`)} actif="alternatif">
+  <div class="page">
+    <h1 class="titre-page">Tirages Alternatifs</h1>
+    <nav class="onglets" aria-label="Rubriques">
+      <a href={lien('tirages-alternatifs/')} aria-current="page">Alternatif</a>
+      <a href={lien('gomme-bichromatee/')}>Gomme Bichromatée</a>
+      <a class="toutes" href={lien('galerie/')}>Toutes les images</a>
+    </nav>
+    <div class="texte"><Content /></div>
+    <Oeuvres oeuvres={oeuvres.alternatif} colonnes={4} descriptions={false} />
+  </div>
+  <Visionneuse />
+</Base>
+
+<style>
+  .texte { max-width: 1000px; margin: 0 auto 40px; font-size: 16px; line-height: 1.7; }
+</style>

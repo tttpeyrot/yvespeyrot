@@ -1,0 +1,65 @@
+---
+// Fenêtre photo plein écran (banque d'images, Alternatif, Gomme) et diaporama.
+// La logique est dans src/scripts/visionneuse.js.
+---
+<div class="vis" id="visionneuse" role="dialog" aria-modal="true" aria-label="Photo agrandie" hidden>
+  <div class="vis-scene">
+    <img class="vis-img" alt="" decoding="async" />
+    <div class="vis-attente" aria-hidden="true"></div>
+  </div>
+  <div class="vis-info">
+    <div class="vis-id"></div>
+    <h2 class="vis-titre"></h2>
+    <p class="vis-texte"></p>
+    <div class="vis-actions">
+      <button type="button" class="bouton vis-sel" hidden></button>
+      <a class="bouton discret vis-lien" hidden>Fiche de la photo</a>
+    </div>
+  </div>
+  <div class="vis-compteur" aria-live="polite"></div>
+  <button type="button" class="vis-btn vis-fermer" aria-label="Fermer (Échap)">×</button>
+  <button type="button" class="vis-btn vis-prec" aria-label="Photo précédente (←)">‹</button>
+  <button type="button" class="vis-btn vis-suiv" aria-label="Photo suivante (→)">›</button>
+  <button type="button" class="vis-btn vis-lecture" aria-label="Lancer le diaporama (espace)">▶</button>
+</div>
+
+<style is:global>
+  .vis {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0, 0, 0, 0.97);
+    display: grid; grid-template-rows: 1fr auto; color: var(--texte);
+  }
+  .vis[hidden] { display: none; }
+  .vis-scene { position: relative; min-height: 0; display: grid; place-items: center; padding: 56px 64px 8px; touch-action: pan-y; }
+  .vis-img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; transition: opacity 0.35s; }
+  .vis.charge .vis-img { opacity: 0.25; }
+  .vis-attente { position: absolute; width: 34px; height: 34px; border-radius: 50%; border: 2px solid #444; border-top-color: var(--or); animation: vis-tourne 0.8s linear infinite; opacity: 0; pointer-events: none; }
+  .vis.charge .vis-attente { opacity: 1; }
+  @keyframes vis-tourne { to { transform: rotate(360deg); } }
+  .vis-info { padding: 10px var(--bord) 18px; text-align: center; max-width: 900px; margin: 0 auto; }
+  .vis-id { font-family: var(--titre); color: var(--or); letter-spacing: 0.08em; font-size: 15px; }
+  .vis-titre { font-size: 20px; color: var(--texte); margin-top: 2px; }
+  .vis-texte { font-size: 14px; color: var(--texte-doux); margin: 6px auto 0; max-width: 760px; max-height: 4.8em; overflow: auto; }
+  .vis-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+  .vis-actions .bouton[hidden] { display: none; }
+  .vis-sel[aria-pressed='true'] { background: var(--or); color: #000; }
+  .vis-compteur { position: absolute; top: 16px; left: 18px; font-family: var(--titre); color: var(--gris); font-size: 14px; letter-spacing: 0.05em; }
+  .vis-btn {
+    position: absolute; border: 0; background: rgba(20, 20, 20, 0.6); color: #ddd;
+    width: 46px; height: 46px; border-radius: 50%; font-size: 30px; line-height: 1; display: grid; place-items: center;
+  }
+  .vis-btn:hover { background: var(--or); color: #000; }
+  .vis-fermer { top: 8px; right: 10px; }
+  .vis-lecture { top: 8px; right: 64px; font-size: 16px; }
+  .vis-prec { left: 10px; top: 42%; }
+  .vis-suiv { right: 10px; top: 42%; }
+  /* Diaporama : l'image seule, la légende réduite à l'identifiant et au titre */
+  .vis.diapo .vis-texte, .vis.diapo .vis-actions { display: none; }
+  .vis.diapo .vis-lecture { background: var(--or); color: #000; }
+  .vis.diapo:not(:hover) .vis-btn { opacity: 0.25; }
+  @media (max-width: 640px) {
+    .vis-scene { padding: 56px 0 4px; }
+    .vis-prec, .vis-suiv { top: auto; bottom: 8px; width: 42px; height: 42px; }
+    .vis-info { padding-bottom: 60px; }
+    .vis-titre { font-size: 17px; }
+  }
+</style>
