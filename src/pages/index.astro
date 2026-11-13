@@ -15,7 +15,15 @@ const panoramas = oeuvres.accueil;
     <p class="nombre">{total}</p>
     <p>Images actuellement disponibles sur la banque d'images</p>
     <p class="acces">Accédez à la banque d'images</p>
-    <a class="ici" href={lien('galerie/')}>ICI</a>
+    <span class="ici-zone">
+      <a class="ici" href={lien('galerie/')}>ICI</a>
+      <!-- Le papillon (machaon) de l'ancien site : il vole puis se pose sur ICI (src/scripts/papillon.js) -->
+      <picture class="papillon" aria-hidden="true">
+        <source srcset={lien('accueil/papillon-fixe.webp')} media="(prefers-reduced-motion: reduce)" />
+        <img src={lien('accueil/papillon.webp')} alt="" width="300" height="300" />
+      </picture>
+    </span>
+    <noscript><style>.papillon { visibility: visible !important; }</style></noscript>
   </section>
 
   <section class="panoramas" aria-roledescription="carrousel" aria-label="Photographies à la une">
@@ -26,11 +34,6 @@ const panoramas = oeuvres.accueil;
           <figcaption><strong>{p.titre}</strong>{p.description && <span> · {p.description}</span>}</figcaption>
         </figure>
       ))}
-      <!-- Le papillon (machaon) qui bat des ailes sur les photos, repris de l'ancien site Wix -->
-      <picture class="papillon" aria-hidden="true">
-        <source srcset={lien('accueil/papillon-fixe.webp')} media="(prefers-reduced-motion: reduce)" />
-        <img src={lien('accueil/papillon.webp')} alt="" width="150" height="150" />
-      </picture>
     </div>
     <button type="button" class="fleche prec" aria-label="Photo précédente">‹</button>
     <button type="button" class="fleche suiv" aria-label="Photo suivante">›</button>
@@ -50,6 +53,16 @@ const panoramas = oeuvres.accueil;
     text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; letter-spacing: 0.02em;
   }
   .ici:hover { color: var(--or-clair); }
+  /* Papillon : taille posée = 3,67 % de la largeur de l'écran, comme sur Wix. Il se pose
+     sur le haut du premier « I », penché à 25°. */
+  .ici-zone { position: relative; display: inline-block; --papillon: clamp(36px, 3.67vw, 64px); }
+  .papillon {
+    position: absolute; z-index: 20; width: var(--papillon); height: var(--papillon);
+    left: calc(12px - var(--papillon) / 2); top: calc(10px - var(--papillon) / 2);
+    transform: rotate(25deg); pointer-events: none; visibility: hidden;
+  }
+  .papillon.vole, .papillon.pose { visibility: visible; }
+  .papillon img { width: 100%; height: 100%; }
   .panoramas { position: relative; margin-top: 30px; }
   .defile { position: relative; aspect-ratio: 2862 / 1000; overflow: hidden; background: #050505; }
   .vue { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1.2s ease; }
@@ -60,11 +73,6 @@ const panoramas = oeuvres.accueil;
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); font-size: 14px; color: #ddd; text-align: center;
   }
   .vue strong { font-family: var(--titre); font-weight: 500; letter-spacing: 0.04em; color: #fff; }
-  .papillon {
-    position: absolute; left: 69%; top: 30%; z-index: 2; width: clamp(40px, 3.7vw, 64px);
-    transform: rotate(18deg); pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
-  }
-  .papillon img { width: 100%; height: auto; }
   .fleche {
     position: absolute; top: 50%; transform: translateY(-50%); border: 0; width: 44px; height: 44px; border-radius: 50%;
     background: rgba(0, 0, 0, 0.45); color: #eee; font-size: 28px; line-height: 1; display: grid; place-items: center;
@@ -89,6 +97,9 @@ const panoramas = oeuvres.accueil;
 </style>
 
 <script>
+  import { faireVoler } from '../scripts/papillon.js';
+  faireVoler(document.querySelector('.papillon'));
+
   const vues = [...document.querySelectorAll('.vue')];
   const points = [...document.querySelectorAll('.points button')];
   let i = 0;

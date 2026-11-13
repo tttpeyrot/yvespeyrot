@@ -49,7 +49,10 @@ Banque d'images d'Yves Peyrot (environ 2 600 photos, classées par pays), plus d
 ### Œuvres et accueil
 
 - **Œuvres** : `npm run photos -- gomme` (ou `alternatif`). Les images sont ajoutées à la fin de la rubrique, titre = nom du fichier. Corriger `titre`, remplir `description` (technique, papier, format, comme les autres : « Gomme bichromatée sur papier Montval 25X18 cm. ») et `alt`. Pour changer l'ordre, déplacer les fiches dans `oeuvres.json`.
-- **Papillon de l'accueil** : le machaon qui bat des ailes sur le diaporama, repris de l'ancien site Wix (`animPapillon5.gif`, converti en WebP animé de 150 px : `public/accueil/papillon.webp`, plus `papillon-fixe.webp` pour les visiteurs qui ont désactivé les animations). Sa place, sa taille et son angle (18°) sont réglés dans `src/pages/index.astro` (`.papillon`).
+- **Papillon de l'accueil** : le machaon de l'ancien site Wix (`animPapillon5.gif`, converti en WebP animé de 300 px : `public/accueil/papillon.webp`). À chaque ouverture de l'accueil, il entre en grand par la gauche, traverse la page en rapetissant, fait une boucle et se pose sur « ICI », penché à 25° (12,6 s sur ordinateur).
+  - Les trajectoires sont celles du code Velo qu'Yves avait écrit sur Wix, recopiées dans `src/scripts/papillon.js` (ordinateur au-delà de 1 200 px, tablette, téléphone). Chaque point est un décalage en pixels par rapport à sa place sur ICI.
+  - Sa place posée et sa taille (3,67 % de la largeur de l'écran, comme sur Wix) sont dans `src/pages/index.astro` (`.ici-zone`, `.papillon`).
+  - Si le visiteur a désactivé les animations, il est posé d'emblée et immobile (`papillon-fixe.webp`).
 - **Accueil** : `npm run photos -- accueil` ajoute un panorama au diaporama (format large, environ 2,9:1, comme les dix d'origine en 2 862 × 1 000). Pour en retirer un ou changer l'ordre : `oeuvres.json`, rubrique `accueil`. Le premier sert aussi d'image d'aperçu quand on partage le site.
 
 ### Corriger, retirer
