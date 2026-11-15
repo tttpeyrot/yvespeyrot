@@ -4,7 +4,7 @@ Banque d'images d'Yves Peyrot (environ 2 600 photos, classées par pays), plus d
 
 - **Qui travaille dessus** : Yves, avec Claude. Il n'est pas développeur, mais il connaît bien son site, qu'il a monté lui-même sur Wix Studio. **Toujours répondre en français et en mots simples**, sans jargon : dire ce qui va changer sur le site, pas comment c'est codé.
 - **Mise en ligne** : GitHub Pages, gratuit. Chaque `git push` sur `main` lance `.github/workflows/deploy.yml` (vérification, construction, publication, environ 3 à 4 minutes).
-- **Adresse** : https://yvespeyrot.github.io/yvespeyrot-site/ (dépôt `yvespeyrot/yvespeyrot-site`, sur le compte GitHub d'Yves depuis le 2026-11-15 ; Tom, son fils, `tttpeyrot`, y est collaborateur). Pour avoir l'adresse courte https://yvespeyrot.github.io/, Yves renomme le dépôt `yvespeyrot.github.io` (Settings → Repository name, il faut être administrateur) : rien d'autre à changer, le workflow donne la nouvelle adresse à Astro.
+- **Adresse** : https://yvespeyrot.github.io/photographie/ (dépôt `yvespeyrot/photographie`, sur le compte GitHub d'Yves depuis le 2026-11-15 ; Tom, son fils, `tttpeyrot`, y est collaborateur). La fin de l'adresse est le nom du dépôt : pour la changer, Yves renomme le dépôt (Settings → Repository name, il faut être administrateur), puis on republie (workflow « Mise en ligne », bouton Run workflow, ou un envoi sur main). Le workflow donne la nouvelle adresse à Astro : rien d'autre à changer.
 - **Technique** : Astro (site statique), JavaScript et CSS simples. Node 22 (`.nvmrc`). Polices libres hébergées avec le site : Barlow, dans l'esprit DIN de l'ancien site, pour le nom, les titres et les identifiants ; Inter pour le texte. Aucun cookie, aucune mesure d'audience.
 
 ## Où est quoi
@@ -98,7 +98,7 @@ GitHub Pages accepte 1 Go au plus. Le site pesait 800 Mo à l'import (2 626 phot
 
 ## Historique
 
-- 2026-11-15 : dépôt transféré de `tttpeyrot` (Tom) au compte d'Yves, `yvespeyrot`, sous le nom `yvespeyrot-site`. La première demande de transfert (sous le nom `yvespeyrot.github.io`) n'a pas reçu d'e-mail ; elle bloquait toute nouvelle demande (« Repository has already been taken ») jusqu'à ce que le dépôt soit renommé. Le site est passé de https://tttpeyrot.github.io/yvespeyrot/ à https://yvespeyrot.github.io/yvespeyrot-site/ sans changer le code. GitHub Pages ne redirige pas l'ancienne adresse.
+- 2026-11-15 : dépôt transféré de `tttpeyrot` (Tom) au compte d'Yves, `yvespeyrot`, sous le nom `yvespeyrot-site`. La première demande de transfert (sous le nom `yvespeyrot.github.io`) n'a pas reçu d'e-mail ; elle bloquait toute nouvelle demande (« Repository has already been taken ») jusqu'à ce que le dépôt soit renommé. Le site est passé de https://tttpeyrot.github.io/yvespeyrot/ à https://yvespeyrot.github.io/yvespeyrot-site/, puis le dépôt a été renommé `photographie` (même adresse de fin que l'ancien site Wix) : https://yvespeyrot.github.io/photographie/. GitHub Pages ne redirige jamais une ancienne adresse.
 
 - 2026-11-13 : import depuis Wix (`outils/importer-wix.mjs`). Le catalogue (2 626 fiches) a été lu par l'API publique de données du site ; les galeries de l'accueil (10), de Gomme (26) et d'Alternatif (47) par l'API Pro Gallery. Les images HD ont été copiées sans réencodage, et les vignettes refaites (400 px pour la banque, 480 px pour les œuvres).
   - Les textes des pages Gomme et Alternatif ont été repris avec de légères corrections d'orthographe et de typographie (« devra-t-être » → « devra être », « Deux jour » → « deux jours »…).
