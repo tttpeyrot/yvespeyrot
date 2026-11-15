@@ -4,7 +4,7 @@ Banque d'images d'Yves Peyrot (environ 2 600 photos, classées par pays), plus d
 
 - **Qui travaille dessus** : Yves, avec Claude. Il n'est pas développeur, mais il connaît bien son site, qu'il a monté lui-même sur Wix Studio. **Toujours répondre en français et en mots simples**, sans jargon : dire ce qui va changer sur le site, pas comment c'est codé.
 - **Mise en ligne** : GitHub Pages, gratuit. Chaque `git push` sur `main` lance `.github/workflows/deploy.yml` (vérification, construction, publication, environ 3 à 4 minutes).
-- **Adresse** : https://tttpeyrot.github.io/yvespeyrot/ (dépôt `tttpeyrot/yvespeyrot`, compte de Tom, fils d'Yves), en attendant le transfert vers un compte d'Yves (voir « Prochaines étapes »).
+- **Adresse** : https://yvespeyrot.github.io/ (dépôt `yvespeyrot/yvespeyrot.github.io`, sur le compte GitHub d'Yves depuis le 2026-11-15 ; le site avait été construit sur le compte de Tom, son fils, `tttpeyrot`).
 - **Technique** : Astro (site statique), JavaScript et CSS simples. Node 22 (`.nvmrc`). Polices libres hébergées avec le site : Barlow, dans l'esprit DIN de l'ancien site, pour le nom, les titres et les identifiants ; Inter pour le texte. Aucun cookie, aucune mesure d'audience.
 
 ## Où est quoi
@@ -87,22 +87,19 @@ GitHub Pages accepte 1 Go au plus. Le site pesait 800 Mo à l'import (2 626 phot
 
 ## Prochaines étapes
 
-1. **Adresse yvespeyrot.github.io**
-   - Yves crée un compte GitHub au nom de `yvespeyrot` (libre le 2026-11-13).
-   - Tom transfère le dépôt : Settings → General → Transfer ownership.
-   - Yves le renomme `yvespeyrot.github.io`.
-   - Le site passe sur https://yvespeyrot.github.io/ sans rien changer au code : le workflow donne la nouvelle adresse à Astro.
-2. **Nom de domaine**
+1. **Nom de domaine**
    - L'acheter (OVH, environ 7 à 10 € par an pour un .fr).
    - Dans le dépôt : Settings → Pages → Custom domain.
    - Chez OVH, zone DNS :
      - 4 enregistrements A vers 185.199.108.153, 185.199.109.153, 185.199.110.153 et 185.199.111.153 ;
      - `www` en CNAME vers `yvespeyrot.github.io`.
    - Cocher « Enforce HTTPS » quand GitHub le propose.
-3. **Quitter Wix** : une fois le nouveau site validé, mettre sur la page Wix un lien vers la nouvelle adresse, puis dépublier le site Wix. Plus rien ne dépend de Wix.
+2. **Quitter Wix** : une fois le nouveau site validé, mettre sur la page Wix un lien vers la nouvelle adresse, puis dépublier le site Wix. Plus rien ne dépend de Wix.
 
 ## Historique
 
-- 2026-11-13 : import depuis Wix (`outils/importer-wix.mjs`). Le catalogue (2 626 fiches) a été lu par l'API publique de données du site ; les galeries de l'accueil (10), de Gomme (26) et d'Alternatif (47) par l'API Pro Gallery. Les images HD ont été copiées sans réencodage, et les vignettes refaites en 480 px.
+- 2026-11-15 : dépôt renommé `yvespeyrot.github.io` puis transféré de `tttpeyrot` (Tom) au compte d'Yves, `yvespeyrot`. Le site est passé de https://tttpeyrot.github.io/yvespeyrot/ à https://yvespeyrot.github.io/ sans changer le code (le workflow donne l'adresse à Astro). GitHub Pages ne redirige pas l'ancienne adresse.
+
+- 2026-11-13 : import depuis Wix (`outils/importer-wix.mjs`). Le catalogue (2 626 fiches) a été lu par l'API publique de données du site ; les galeries de l'accueil (10), de Gomme (26) et d'Alternatif (47) par l'API Pro Gallery. Les images HD ont été copiées sans réencodage, et les vignettes refaites (400 px pour la banque, 480 px pour les œuvres).
   - Les textes des pages Gomme et Alternatif ont été repris avec de légères corrections d'orthographe et de typographie (« devra-t-être » → « devra être », « Deux jour » → « deux jours »…).
   - Les descriptions et les mots-clés des photos sont repris tels quels.

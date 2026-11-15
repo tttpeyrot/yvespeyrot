@@ -2,7 +2,7 @@
 
 C'est le site de ta banque d'images, sorti de Wix. On y retrouve les mêmes photos, les mêmes pages et le même style, et il est hébergé gratuitement par GitHub.
 
-**Adresse du site : https://tttpeyrot.github.io/yvespeyrot/**
+**Adresse du site : https://yvespeyrot.github.io/**
 
 Pour le faire vivre, tu n'as pas besoin de coder : tu parles à Claude, qui fait les modifications, te les montre, puis les met en ligne.
 
@@ -15,11 +15,11 @@ Pour le faire vivre, tu n'as pas besoin de coder : tu parles à Claude, qui fait
    ```
 3. Toujours dans le Terminal, taper `claude`, appuyer sur Entrée, et se connecter avec son compte Claude.
 4. Dire à Claude :
-   > Installe ce qu'il faut pour travailler sur mon site (git, Node 22, l'outil GitHub `gh`), connecte-moi à GitHub, puis télécharge le dépôt github.com/tttpeyrot/yvespeyrot dans mon dossier Documents.
+   > Installe ce qu'il faut pour travailler sur mon site (git, Node 22, l'outil GitHub `gh`), connecte-moi à GitHub avec mon compte yvespeyrot, puis télécharge mon dépôt github.com/yvespeyrot/yvespeyrot.github.io dans mon dossier Documents.
 
-   Claude demandera la permission avant chaque étape. Il faut un compte GitHub : Tom t'aura ajouté au dépôt.
+   Claude demandera la permission avant chaque étape. Le site est sur ton compte GitHub (yvespeyrot).
 
-Ensuite, à chaque fois : ouvrir le Terminal, taper `cd ~/Documents/yvespeyrot && claude`, puis parler.
+Ensuite, à chaque fois : ouvrir le Terminal, taper `cd ~/Documents/yvespeyrot.github.io && claude`, puis parler.
 
 ## Ce que tu peux lui dire
 
@@ -34,7 +34,6 @@ Ensuite, à chaque fois : ouvrir le Terminal, taper `cd ~/Documents/yvespeyrot &
 
 ## Prochaines étapes
 
-- Créer ton compte GitHub **yvespeyrot** : Tom te transférera le site, qui passera à l'adresse https://yvespeyrot.github.io/.
 - Acheter un nom de domaine (environ 10 € par an), par exemple yvespeyrot.fr. Claude saura le brancher.
 - Une fois le nouveau site validé : dépublier le site Wix.
 
